@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -8,7 +7,7 @@ public class server_frame extends javax.swing.JFrame
    ArrayList clientOutputStreams;
    ArrayList<String> users;
 
-   public class ClientHandler implements Runnable	
+   public class ClientHandler implements Runnable   
    {
        BufferedReader reader;
        Socket sock;
@@ -25,7 +24,7 @@ public class server_frame extends javax.swing.JFrame
             }
             catch (Exception ex) 
             {
-                ta_chat.append("Unexpected error... \n");
+                ta_chat.append("Error creando instancias... \n");
             }
 
        }
@@ -40,41 +39,34 @@ public class server_frame extends javax.swing.JFrame
             {
                 while ((message = reader.readLine()) != null) 
                 {
-                    ta_chat.append("Received: " + message + "\n");
+                    ta_chat.append("Recibido: " + message + "\n");
                     data = message.split(":");
                     
-                    for (String token:data) 
-                    {
-                        ta_chat.append(token + "\n");
-                    }
+                    
 
                     if (data[2].equals(connect)) 
                     {
                         tellEveryone((data[0] + ":" + data[1] + ":" + chat));
                         userAdd(data[0]);
                     } 
-                    else if (data[2].equals(disconnect)) 
-                    {
-                        tellEveryone((data[0] + ":has disconnected." + ":" + chat));
-                        userRemove(data[0]);
-                    } 
+                    
                     else if (data[2].equals(chat)) 
                     {
                         tellEveryone(message);
                     } 
                     else 
                     {
-                        ta_chat.append("No Conditions were met. \n");
+                        ta_chat.append("No se cumplieron las condiciones. \n");
                     }
                 } 
              } 
              catch (Exception ex) 
              {
-                ta_chat.append("Lost a connection. \n");
+                ta_chat.append("Conexion perdida. \n");
                 ex.printStackTrace();
                 clientOutputStreams.remove(client);
              } 
-	} 
+    } 
     }
 
     public server_frame() 
@@ -82,8 +74,7 @@ public class server_frame extends javax.swing.JFrame
         initComponents();
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+                       
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -165,17 +156,16 @@ public class server_frame extends javax.swing.JFrame
         );
 
         pack();
-    }// </editor-fold>                        
+    }                       
 
     private void b_finalizarActionPerformed(java.awt.event.ActionEvent evt) {                                            
         try 
         {
-            Thread.sleep(5000);                 //5000 milliseconds is five second.
+            Thread.sleep(5000);               
         } 
         catch(InterruptedException ex) {Thread.currentThread().interrupt();}
         
-        tellEveryone("Server:is stopping and all users will be disconnected.\n:Chat");
-        ta_chat.append("Server stopping... \n");
+        ta_chat.append("Deteniendo servidor durante 5 segundos... \n");
         
         ta_chat.setText("");
     }                                           
@@ -184,11 +174,11 @@ public class server_frame extends javax.swing.JFrame
         Thread starter = new Thread(new ServerStart());
         starter.start();
         
-        ta_chat.append("Server started...\n");
+        ta_chat.append("Servidor iniciado...\n");
     }                                         
 
     private void b_usuariosActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        ta_chat.append("\n Online users : \n");
+        ta_chat.append("\n Usuarios activos: \n");
         for (String current_user : users)
         {
             ta_chat.append(current_user);
@@ -226,28 +216,26 @@ public class server_frame extends javax.swing.JFrame
 
                 while (true) 
                 {
-				Socket clientSock = serverSock.accept();
-				PrintWriter writer = new PrintWriter(clientSock.getOutputStream());
-				clientOutputStreams.add(writer);
+                Socket clientSock = serverSock.accept();
+                PrintWriter writer = new PrintWriter(clientSock.getOutputStream());
+                clientOutputStreams.add(writer);
 
-				Thread listener = new Thread(new ClientHandler(clientSock, writer));
-				listener.start();
-				ta_chat.append("Got a connection. \n");
+                Thread listener = new Thread(new ClientHandler(clientSock, writer));
+                listener.start();
+                ta_chat.append("Con conexion. \n");
                 }
             }
             catch (Exception ex)
             {
-                ta_chat.append("Error making a connection. \n");
+                ta_chat.append("Error iniciando conexion. \n");
             }
         }
     }
     
     public void userAdd (String data) 
     {
-        String message, add = ": :Connect", done = "Server: :Done", name = data;
-        ta_chat.append("Before " + name + " added. \n");
+        String message, add = ": :Conectado", done = "Servidor: :Hecho", name = data;
         users.add(name);
-        ta_chat.append("After " + name + " added. \n");
         String[] tempList = new String[(users.size())];
         users.toArray(tempList);
 
@@ -259,39 +247,26 @@ public class server_frame extends javax.swing.JFrame
         tellEveryone(done);
     }
     
-    public void userRemove (String data) 
-    {
-        String message, add = ": :Connect", done = "Server: :Done", name = data;
-        users.remove(name);
-        String[] tempList = new String[(users.size())];
-        users.toArray(tempList);
-
-        for (String token:tempList) 
-        {
-            message = (token + add);
-            tellEveryone(message);
-        }
-        tellEveryone(done);
-    }
+   
     
     public void tellEveryone(String message) 
     {
-	Iterator it = clientOutputStreams.iterator();
+    Iterator it = clientOutputStreams.iterator();
 
         while (it.hasNext()) 
         {
             try 
             {
                 PrintWriter writer = (PrintWriter) it.next();
-		writer.println(message);
-		ta_chat.append("Sending: " + message + "\n");
+        writer.println(message);
+        ta_chat.append("Enviando: " + message + "\n");
                 writer.flush();
                 ta_chat.setCaretPosition(ta_chat.getDocument().getLength());
 
             } 
             catch (Exception ex) 
             {
-		ta_chat.append("Error telling everyone. \n");
+        ta_chat.append("Error al comunicar a todos \n");
             }
         } 
     }
@@ -305,3 +280,4 @@ public class server_frame extends javax.swing.JFrame
     private javax.swing.JTextArea ta_chat;
     // End of variables declaration                   
 }
+

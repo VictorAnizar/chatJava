@@ -2,12 +2,6 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import javax.imageio.ImageIO;
-import java.awt.AWTException;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 
 
 public class client_frame extends javax.swing.JFrame 
@@ -38,62 +32,14 @@ public class client_frame extends javax.swing.JFrame
          users.add(data);
     }
     
-    //-------------Para indicar que un usuario se agrega al dinal de ta_chat-------------//
-    
-    public void userRemove(String data) 
-    {   
-         ta_chat.append(data + " Ahora está desconectado.\n");
-    }
-    
-    //--------------------------//
-    
-    public void writeUsers() 
-    {
-         String[] tempList = new String[(users.size())];
-         users.toArray(tempList);
-         for (String token:tempList) 
-         {
-             //users.append(token + "\n");
-         }
-    }
-    
-    //------------Para indicar que un usuario se desconecta--------------//
-    
-    public void sendDisconnect() 
-    {
-        String bye = (username + ": :Desconectado");
-        try
-        {
-            writer.println(bye); 
-            writer.flush(); 
-        } catch (Exception e) 
-        {
-            ta_chat.append("No se puede mostrar mensaje de desconectar.\n");
-        }
-    }
-
-    //-----------Para indicarle a la pantalla que se desconecta un usuario---------------//
-    
-    public void Disconnect() 
-    {
-        try 
-        {
-            ta_chat.append("Desconectado.\n");
-            sock.close();
-        } catch(Exception ex) {
-            ta_chat.append("Fallo al desconectar. \n");
-        }
-        isConnected = false;
-        tf_usuario.setEditable(true);
-
-    }
+   
     //Para que inicien todos los elementos de la interfaz gráfica
     public client_frame() 
     {
         initComponents();
     }
     
-    //--------------------------//
+    //---------------Es el que lee la entrada de datos-----------//
     
     public class IncomingReader implements Runnable
     {
@@ -101,7 +47,7 @@ public class client_frame extends javax.swing.JFrame
         public void run() 
         {
             String[] data;
-            String stream, done = "Done", connect = "Connect", disconnect = "Disconnect", chat = "Chat";
+            String stream, connect = "Conectado", disconnect = "Desconectado", chat = "Chat";
 
             try 
             {
@@ -119,16 +65,7 @@ public class client_frame extends javax.swing.JFrame
                         ta_chat.removeAll();
                         userAdd(data[0]);
                      } 
-                     else if (data[2].equals(disconnect)) 
-                     {
-                         userRemove(data[0]);
-                     } 
-                     else if (data[2].equals(done)) 
-                     {
-                        //users.setText("");
-                        writeUsers();
-                        users.clear();
-                     }
+                     
                 }
            }catch(Exception ex) 
            {
@@ -139,8 +76,7 @@ public class client_frame extends javax.swing.JFrame
 
     //--------------------------//
     
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+                            
     private void initComponents() {
 
         lb_direccion = new javax.swing.JLabel();
@@ -152,7 +88,6 @@ public class client_frame extends javax.swing.JFrame
         lb_contrasenia = new javax.swing.JLabel();
         tf_contrasenia = new javax.swing.JTextField();
         b_conectar = new javax.swing.JButton();
-        b_desconectar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         ta_chat = new javax.swing.JTextArea();
         tf_chat = new javax.swing.JTextField();
@@ -160,26 +95,18 @@ public class client_frame extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat - VentanaCliente");
-        setName("client"); // NOI18N
+        setName("client");
         setResizable(false);
 
         lb_direccion.setText("Dirección:");
 
         tf_direccion.setText("localhost");
-        tf_direccion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_direccionActionPerformed(evt);
-            }
-        });
+        
 
         lb_puerto.setText("Puerto:");
 
         tf_puerto.setText("2222");
-        tf_puerto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_puertoActionPerformed(evt);
-            }
-        });
+        
 
         lb_usuario.setText("Usuario:");
 
@@ -198,12 +125,7 @@ public class client_frame extends javax.swing.JFrame
             }
         });
 
-        b_desconectar.setText("Desconectar");
-        b_desconectar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                b_desconectarActionPerformed(evt);
-            }
-        });
+        
 
         ta_chat.setColumns(20);
         ta_chat.setRows(5);
@@ -247,8 +169,7 @@ public class client_frame extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(b_conectar)
                         .addGap(2, 2, 2)
-                        .addComponent(b_desconectar)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        ))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -268,7 +189,7 @@ public class client_frame extends javax.swing.JFrame
                         .addComponent(lb_usuario)
                         .addComponent(lb_contrasenia)
                         .addComponent(b_conectar)
-                        .addComponent(b_desconectar)))
+                        ))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -279,16 +200,9 @@ public class client_frame extends javax.swing.JFrame
         );
 
         pack();
-    }// </editor-fold>                        
+    }                     
 
-    private void tf_direccionActionPerformed(java.awt.event.ActionEvent evt) {                                             
-       
-    }                                            
-
-    private void tf_puertoActionPerformed(java.awt.event.ActionEvent evt) {                                          
-   
-    }                                         
-
+    
     private void tf_usuarioActionPerformed(java.awt.event.ActionEvent evt) {                                           
     
     }                                          
@@ -311,7 +225,7 @@ public class client_frame extends javax.swing.JFrame
             } 
             catch (Exception ex) 
             {
-                ta_chat.append("Cannot Connect! Try Again. \n");
+                ta_chat.append("Error al conectar. \n");
                 tf_usuario.setEditable(true);
             }
             
@@ -319,14 +233,11 @@ public class client_frame extends javax.swing.JFrame
             
         } else if (isConnected == true) 
         {
-            ta_chat.append("You are already connected. \n");
+            ta_chat.append("ya estás conectado. \n");
         }
     }                                          
 
-    private void b_desconectarActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        sendDisconnect();
-        Disconnect();
-    }                                             
+                                               
 
     private void b_enviarActionPerformed(java.awt.event.ActionEvent evt) {                                         
         String nothing = "";
@@ -336,9 +247,9 @@ public class client_frame extends javax.swing.JFrame
         } else {
             try {
                writer.println(username + ":" + tf_chat.getText() + ":" + "Chat");
-               writer.flush(); // flushes the buffer
+               writer.flush(); 
             } catch (Exception ex) {
-                ta_chat.append("Message was not sent. \n");
+                ta_chat.append("Error al enviar mensaje. \n");
             }
             tf_chat.setText("");
             tf_chat.requestFocus();
@@ -360,9 +271,7 @@ public class client_frame extends javax.swing.JFrame
         });
     }
     
-    // Variables declaration - do not modify                     
     private javax.swing.JButton b_conectar;
-    private javax.swing.JButton b_desconectar;
     private javax.swing.JButton b_enviar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lb_contrasenia;
@@ -375,5 +284,5 @@ public class client_frame extends javax.swing.JFrame
     private javax.swing.JTextField tf_direccion;
     private javax.swing.JTextField tf_puerto;
     private javax.swing.JTextField tf_usuario;
-    // End of variables declaration                   
 }
+
